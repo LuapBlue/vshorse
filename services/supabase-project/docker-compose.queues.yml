@@ -1,0 +1,54 @@
+# Message Queue services for Supabase
+# Provides drop-in replacements for RabbitMQ and BullMQ
+
+services:
+  # RabbitMQ for AMQP compatibility
+  rabbitmq:
+    container_name: supabase-rabbitmq
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"        # AMQP port
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-rabbitmq_password}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-secret_cookie}
+    volumes:
+      - ./volumes/storage/rabbitmq/data:/var/lib/rabbitmq
+      - ./volumes/storage/rabbitmq/logs:/var/log/rabbitmq
+    networks:
+      - supabase_network_default
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Bull Board for BullMQ monitoring (uses existing Redis)
+  bullboard:
+    container_name: supabase-bullboard
+    image: deadly0/bull-board:latest
+    restart: unless-stopped
+    ports:
+      - "${BULLBOARD_PORT:-3030}:3000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - supabase_network_default
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  supabase_network_default:
+    external: true
+    name: supabase_default

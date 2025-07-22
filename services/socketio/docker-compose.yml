@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  socketio-server:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: socketio-server
+    restart: unless-stopped
+    ports:
+      - "3020:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3020,http://localhost:8000,http://localhost:8444
+      - DEBUG=socket.io:*
+      # Supabase connection
+      - SUPABASE_URL=http://kong:8000
+      - SUPABASE_ANON_KEY=${ANON_KEY}
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@supabase-project-db-1:${POSTGRES_PORT}/${POSTGRES_DB}
+    networks:
+      - supabase_default
+      - socketio_network
+    # No direct dependencies since Supabase services run in a separate docker-compose
+    healthcheck:
+      test: ["CMD", "node", "-e", "http.get('http://localhost:3000/health', res => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      - "com.socketio.service=server"
+      - "com.socketio.version=latest"
+      - "traefik.enable=true"
+      - "traefik.http.routers.socketio.rule=Host(`localhost`) && PathPrefix(`/socket.io`)"
+      - "traefik.http.services.socketio.loadbalancer.server.port=3000"
+      - "traefik.docker.network=traefik-network"
+
+networks:
+  supabase_default:
+    external: true
+  socketio_network:
+    driver: bridge
+  traefik-network:
+    external: true

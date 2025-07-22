@@ -1,0 +1,20 @@
+{
+  "name": "supabase-queue-examples",
+  "version": "1.0.0",
+  "description": "Message queue examples for Supabase with RabbitMQ and BullMQ",
+  "main": "unified-queue.js",
+  "scripts": {
+    "rabbitmq": "node rabbitmq-example.js",
+    "bullmq": "node bullmq-example.js",
+    "unified": "node unified-queue.js",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3",
+    "bullmq": "^5.1.0",
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

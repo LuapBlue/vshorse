@@ -1,0 +1,33 @@
+{
+  "name": "supabase-clickhouse-integration",
+  "version": "1.0.0",
+  "description": "Supabase with ClickHouse analytics integration",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "playwright test",
+    "test:install": "playwright install",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "supabase",
+    "clickhouse",
+    "analytics",
+    "database"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "bullmq": "^5.1.9"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.2",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}

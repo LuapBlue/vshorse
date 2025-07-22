@@ -1,0 +1,25 @@
+# Redis service for Supabase with Vault integration
+# This file adds Redis to the Supabase stack
+
+services:
+  redis:
+    container_name: supabase-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./volumes/storage/redis:/data
+    networks:
+      - supabase_network_default
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  supabase_network_default:
+    external: true
+    name: supabase_default

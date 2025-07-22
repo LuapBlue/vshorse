@@ -1,0 +1,59 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+npm-debug.log*
+.env
+.env.local
+.env.*.local
+*.sock
+
+# SSH Keys and Certificates
+**/ssh/*_key
+**/ssh/*_key.pub
+**/.ssh/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Database files and volumes
+**/volumes/db/data/
+**/volumes/storage/
+**/data/
+postgres-data/
+redis-data/
+clickhouse-data/
+
+# Docker volumes and runtime files
+**/volumes/
+docker-compose.override.yml
+
+# Credentials and secrets
+credentials.txt
+secrets/
+*.htpasswd
+.env.production
+.env.staging
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db

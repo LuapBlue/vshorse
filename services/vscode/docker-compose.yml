@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  vscode:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: vscode
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - PASSWORD=${CODE_SERVER_PASSWORD}
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD}
+      - PROXY_DOMAIN=${CODE_SERVER_DOMAIN:-localhost}
+      - DEFAULT_WORKSPACE=/config/workspace
+      - PWA_APPNAME=VSCode
+      # Install extensions
+      - INSTALL_EXTENSIONS=${CODE_SERVER_EXTENSIONS:-}
+      # Additional VS Code settings
+      - VSCODE_SETTINGS=${VSCODE_SETTINGS:-}
+    volumes:
+      - ./config:/config
+      - ./workspace:/config/workspace
+      - .:/home/coder/projects:rw # Mount the current directory for vscode development
+    ports:
+      - "8444:8443"
+    networks:
+      - supabase_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8443/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.vscode.app=modular"
+      - "com.vscode.version=latest"
+
+networks:
+  supabase_default:
+    external: true
